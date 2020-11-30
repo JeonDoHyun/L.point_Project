@@ -1,0 +1,223 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+결과를 보면 소비자 심리지수를 대입해본 결과
+소비자 심리지수와 영향을 많이 받는 것은 화장품으로 결과가 나왔습니다. 그러므로 화장품은 소비자 심리지수에 민감한 제품군이므로 앞으로 소비자 심리지수의 추세를 보면 트렌드가 보일것 같습니다.
+
+```{r}
+personal<-read.csv("C:/Users/jack1/Desktop/퍼스널케어.csv")
+frozen<-read.csv("C:/Users/jack1/Desktop/냉동식품.csv")
+pet<-read.csv("C:/Users/jack1/Desktop/애완용품.csv")
+cosmetic<-read.csv("C:/Users/jack1/Desktop/화장품.csv")
+health<-read.csv("C:/Users/jack1/Desktop/건강식품.csv")
+buy.personal<-c(length(grep("201804",personal$SESS_DT)),
+                               length(grep("201805",personal$SESS_DT)),
+                               length(grep("201806",personal$SESS_DT)),
+                               length(grep("201807",personal$SESS_DT)),
+                               length(grep("201808",personal$SESS_DT)),
+                               length(grep("201809",personal$SESS_DT)))
+buy.frozen<-c(length(grep("201804",frozen$SESS_DT)),
+       length(grep("201805",frozen$SESS_DT)),
+       length(grep("201806",frozen$SESS_DT)),
+       length(grep("201807",frozen$SESS_DT)),
+       length(grep("201808",frozen$SESS_DT)),
+       length(grep("201809",frozen$SESS_DT)))
+buy.pet<-c(length(grep("201804",pet$SESS_DT)),
+              length(grep("201805",pet$SESS_DT)),
+              length(grep("201806",pet$SESS_DT)),
+              length(grep("201807",pet$SESS_DT)),
+              length(grep("201808",pet$SESS_DT)),
+              length(grep("201809",pet$SESS_DT)))
+buy.cosmetic<-c(length(grep("201804",cosmetic$SESS_DT)),
+                length(grep("201805",cosmetic$SESS_DT)),
+                length(grep("201806",cosmetic$SESS_DT)),
+                length(grep("201807",cosmetic$SESS_DT)),
+                length(grep("201808",cosmetic$SESS_DT)),
+                length(grep("201809",cosmetic$SESS_DT)))
+buy.health<-c(length(grep("201804",health$SESS_DT)),
+              length(grep("201805",health$SESS_DT)),
+              length(grep("201806",health$SESS_DT)),
+              length(grep("201807",health$SESS_DT)),
+              length(grep("201808",health$SESS_DT)),
+              length(grep("201809",health$SESS_DT)))
+custom<-c(107.1,107.9,105.5,101.1,99.2,100.2)
+cor.test(custom,buy.cosmetic)
+cor.test(custom,buy.personal)
+cor.test(custom,buy.frozen)
+cor.test(custom,buy.pet)
+cor.test(custom,buy.health)
+
+```
+
+
+날씨에 영향을 받는 날은 없습니다.
+
+```{r}
+weather<-read.csv("C:/Users/jack1/Desktop/날씨.csv",header=T)
+weather$X<-as.Date(weather$X)
+Apr<-subset(weather,X>="2018-04-01"& X<"2018-05-01")
+May<-subset(weather,X>="2018-05-01"& X<"2018-06-01")
+Jun<-subset(weather,X>="2018-06-01"& X<"2018-07-01")
+Jul<-subset(weather,X>="2018-07-01"& X<"2018-08-01")
+Aug<-subset(weather,X>="2018-08-01"& X<"2018-09-01")
+Oct<-subset(weather,X>="2018-09-01"& X<"2018-10-01")
+##비가 오지 않은날의 합
+rain<-c(sum(is.na(Apr$강수량)),
+sum(is.na(May$강수량)),
+sum(is.na(Jun$강수량)),
+sum(is.na(Jul$강수량)),
+sum(is.na(Aug$강수량)),
+sum(is.na(Oct$강수량)))
+##평균 기온
+tem<-c(mean(Apr$평균기온),
+mean(May$평균기온),
+mean(Jun$평균기온),
+mean(Jul$평균기온),
+mean(Aug$평균기온),
+mean(Oct$평균기온))
+##평균 습도
+hum<-c(mean(Apr$상대습도),
+       mean(May$상대습도),
+       mean(Jun$상대습도),
+       mean(Jul$상대습도),
+       mean(Aug$상대습도),
+       mean(Oct$상대습도))
+
+cor.test(rain,buy.cosmetic)
+cor.test(rain,buy.health)
+cor.test(rain,buy.frozen)
+cor.test(rain,buy.personal)
+cor.test(,buy.pet)
+
+```
+
+
+
+```{r}
+date<-table(frozen$SESS_DT)
+dateF<-as.data.frame(date)
+week<-matrix(data=dateF$Freq,ncol=7,byrow=T)
+apply(week,1,mean)####주별 평균
+apply(week,2,mean)###요일별 평균
+A<-c(week[,1],week[,2],week[,3],week[,4],week[,5],week[,6],week[,7])
+n<-rep(27,7)
+group<-rep(1:7,n)
+group_df<-data.frame(A,group)
+sapply(group_df,class)
+group_df<-transform(group_df,group=factor(group))
+attach(group_df)
+par(mfrow = c(1,1))
+boxplot(A ~ group, 
+        main = "frozen", 
+        xlab = "Day of weeak", 
+        ylab = "Count of buying")
+tsdata<-ts(dateF$Freq,frequency=7)
+ts.plot(tsdata)
+plot(stl(tsdata,"periodic"))
+```
+
+
+```{r}
+date1<-table(personal$SESS_DT)
+dateF1<-as.data.frame(date1)
+week1<-matrix(data=dateF1$Freq,ncol=7,byrow=T)
+apply(week1,1,mean)####주별 평균
+apply(week1,2,mean)###요일별 평균
+A1<-c(week1[,1],week1[,2],week1[,3],week1[,4],week1[,5],week1[,6],week1[,7])
+n<-rep(27,7)
+group1<-rep(1:7,n)
+group_df1<-data.frame(A1,group)
+sapply(group_df1,class)
+group_df1<-transform(group_df1,group=factor(group))
+attach(group_df1)
+par(mfrow = c(1,1))
+boxplot(A1 ~ group1, 
+        main = "Personal", 
+        xlab = "Day of weeak", 
+        ylab = "Count of buying")
+tsdata1<-ts(dateF1$Freq,frequency=7)
+ts.plot(tsdata1)
+plot(stl(tsdata1,"periodic"))
+```
+
+```{r}
+date2<-table(cosmetic$SESS_DT)
+dateF2<-as.data.frame(date2)
+week2<-matrix(data=dateF2$Freq,ncol=7,byrow=T)
+apply(week2,1,mean)####주별 평균
+apply(week2,2,mean)###요일별 평균
+A2<-c(week2[,1],week2[,2],week2[,3],week2[,4],week2[,5],week2[,6],week2[,7])
+n<-rep(27,7)
+group2<-rep(1:7,n)
+group_df2<-data.frame(A2,group)
+sapply(group_df2,class)
+group_df2<-transform(group_df2,group=factor(group))
+attach(group_df2)
+par(mfrow = c(1,1))
+boxplot(A2 ~ group2, 
+        main = "cosmetic", 
+        xlab = "Day of weeak", 
+        ylab = "Count of buying")
+tsdata2<-ts(dateF2$Freq,frequency=7)
+ts.plot(tsdata2)
+plot(stl(tsdata2,"periodic"))
+```
+
+
+```{r}
+date3<-table(pet$SESS_DT)
+dateF3<-as.data.frame(date3)
+week3<-matrix(data=dateF3$Freq,ncol=7,byrow=T)
+apply(week3,1,mean)####주별 평균
+apply(week3,2,mean)###요일별 평균
+A3<-c(week3[,1],week3[,2],week3[,3],week3[,4],week3[,5],week3[,6],week3[,7])
+n<-rep(27,7)
+group3<-rep(1:7,n)
+group_df3<-data.frame(A3,group)
+sapply(group_df3,class)
+group_df3<-transform(group_df3,group=factor(group))
+attach(group_df3)
+par(mfrow = c(1,1))
+boxplot(A3 ~ group3, 
+        main = "pet", 
+        xlab = "Day of weeak", 
+        ylab = "Count of buying")
+tsdata3<-ts(dateF3$Freq,frequency=7)
+ts.plot(tsdata3)
+plot(stl(tsdata3,"periodic"))
+```
+
+
+
+
+
+```{r}
+date4<-table(health$SESS_DT)
+dateF4<-as.data.frame(date4)
+week4<-matrix(data=dateF4$Freq,ncol=7,byrow=T)
+apply(week4,1,mean)####주별 평균
+apply(week4,2,mean)###요일별 평균
+A4<-c(week4[,1],week4[,2],week4[,3],week4[,4],week4[,5],week4[,6],week4[,7])
+n<-rep(27,7)
+group4<-rep(1:7,n)
+group_df4<-data.frame(A4,group)
+sapply(group_df4,class)
+group_df4<-transform(group_df4,group=factor(group))
+attach(group_df4)
+par(mfrow = c(1,1))
+boxplot(A4 ~ group4, 
+        main = "health", 
+        xlab = "Day of weeak", 
+        ylab = "Count of buying")
+tsdata4<-ts(dateF4$Freq,frequency=7)
+ts.plot(tsdata4)
+plot(stl(tsdata4,"periodic"))
+```
+
+
+
+
+
+
+
