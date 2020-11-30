@@ -1,7 +1,6 @@
 # L.point_Project
 L.point 빅데이터 공모전 프로젝트 
-
-<h1> [PPT 파일 참고](https://github.com/JeonDoHyun/L.point_Project/tree/main/%EB%B9%85%EB%8D%B0%EC%9D%B4%ED%84%B0%20%EA%B3%B5%EB%AA%A8%EC%A0%84/%EB%B9%85%ED%86%A0%EB%A6%AC) </h1>
+● [발표 자료 ](https://github.com/JeonDoHyun/L.point_Project/tree/main/%EB%B9%85%EB%8D%B0%EC%9D%B4%ED%84%B0%20%EA%B3%B5%EB%AA%A8%EC%A0%84/%EB%B9%85%ED%86%A0%EB%A6%AC)<BR>
 
 
 ![1](https://user-images.githubusercontent.com/52389219/100565553-41672b00-3307-11eb-9aa8-564c577b9db6.JPG)
